@@ -1,20 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Norhtwind.UnitOfWork;
 using Northwind.Models;
 
 namespace Northwind.WebApi.Controllers
 {
-    [Route("api/Customer")]
-    public class CustomerController : Controller
+    public class CustomerController : NorthwindController
     {
-        private readonly IUnitOfWork _unitOfWork;
-
-        public CustomerController(IUnitOfWork unitOfWork)
+        public CustomerController(ILoggerFactory loggerFactory, IUnitOfWork unitOfWork): base(loggerFactory, unitOfWork)
         {
-            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
+        [Authorize]
         [Route("{id:int}")]
         public IActionResult GetById(int id)
         {
@@ -48,6 +47,7 @@ namespace Northwind.WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles="admin")]
         [Route("GetPaginatedCustomer/{page:int}/{rows:int}")]
         public IActionResult GetPaginatedCustomer(int page, int rows)
         {
